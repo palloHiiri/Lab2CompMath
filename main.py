@@ -59,7 +59,7 @@ class NonlinearEquationSolver:
             choice = input("Ваш выбор (1/2): ")
             if choice in ['1', '2']:
                 return choice
-            print("Некорректный ввод. Пожалуйста, введите 1 или 2.")
+            print("Режимов два. Выбирай из предложенных")
 
     def read_equation_from_keyboard(self):
         print("\nДоступные уравнения:")
@@ -73,32 +73,38 @@ class NonlinearEquationSolver:
                     raise ValueError
                 break
             except ValueError:
-                print("Пожалуйста, введите число от 1 до 5.")
+                print("Уравнений всего пять. Выбирай из предложенных")
 
         while True:
             try:
-                a = float(input("Введите левую границу интервала: "))
-                b = float(input("Введите правую границу интервала: "))
+                a = float(input("Введите левую границу интервала: ").replace(',', '.'))
+                b = float(input("Введите правую границу интервала: ").replace(',', '.'))
                 if a >= b:
-                    print("Левая граница должна быть меньше правой!")
+                    print("Таки левая левее правой должна быть")
                     continue
                 break
             except ValueError:
-                print("Пожалуйста, введите числовые значения.")
+                print("Числа хочу... числа...")
 
         while True:
             try:
-                eps = float(input("Введите точность вычисления: "))
+                eps = float(input("Введите точность вычисления: ").replace(',', '.'))
                 if eps <= 0:
-                    print("Точность должна быть положительным числом!")
+                    print("Хочу точность больше нуля! Больше нуля хочу!!!")
+                    continue
+                elif eps >1:
+                    print("А можно точность поменьше плись(")
                     continue
                 break
             except ValueError:
-                print("Пожалуйста, введите положительное число.")
+                print("Вводим нормальную точность, нормальную!")
 
         return eq_num, a, b, eps
 
     def read_equation_from_file(self):
+        print("\nДоступные уравнения:")
+        for num, eq in self.equations.items():
+            print(f"{num}. {eq['desc']}")
         while True:
             try:
                 filename = input("Введите имя файла: ")
@@ -106,34 +112,36 @@ class NonlinearEquationSolver:
                     lines = [line.strip() for line in f.readlines() if line.strip()]
 
                 if len(lines) < 4:
-                    raise ValueError("Файл должен содержать минимум 4 строки")
+                    raise ValueError("Строк должно быть минимум 4. Куда строки дел?")
 
                 eq_num = int(lines[0])
                 if eq_num not in self.equations:
-                    raise ValueError("Некорректный номер уравнения")
+                    raise ValueError("Таких уравнений у нас нет")
 
-                a = float(lines[1])
-                b = float(lines[2])
+                a = float(lines[1].replace(',', '.'))
+                b = float(lines[2].replace(',', '.'))
                 if a >= b:
-                    raise ValueError("Левая граница должна быть меньше правой")
+                    raise ValueError("Таки левая граница должна быть левее правой")
 
-                eps = float(lines[3])
+                eps = float(lines[3].replace(',', '.'))
                 if eps <= 0:
-                    raise ValueError("Точность должна быть положительной")
+                    raise ValueError("Ненене, слишком маленькая точность!")
+                elif eps > 1:
+                    raise ValueError("А можно поменьше плись(")
 
                 return eq_num, a, b, eps
 
             except FileNotFoundError:
-                print("Файл не найден. Попробуйте еще раз.")
+                print("Такого файла в наличии нет, попробуйте позже")
             except ValueError as e:
-                print(f"Ошибка в данных файла: {e}. Попробуйте еще раз.")
+                print(f"Ошибка в данных файла: {e}. Давай по новой!")
             except Exception as e:
-                print(f"Неизвестная ошибка: {e}. Попробуйте еще раз.")
+                print(f"Хрень какая-то: {e}. Давай по новой!")
 
     def read_system_from_keyboard(self):
         print("\nДоступные системы уравнений:")
         for num, sys in self.systems.items():
-            print(f"{num}. {sys['desc']}")
+            print(f"{num}. \n{sys['desc']}\n")
 
         while True:
             try:
@@ -142,29 +150,35 @@ class NonlinearEquationSolver:
                     raise ValueError
                 break
             except ValueError:
-                print("Пожалуйста, введите число от 1 до 3.")
+                print("Число. Число от 1 до 3. Так сложно чтоле?")
 
         while True:
             try:
-                x0 = float(input("Введите начальное приближение для x: "))
-                y0 = float(input("Введите начальное приближение для y: "))
+                x0 = float(input("Введите начальное приближение для x: ").replace(',', '.'))
+                y0 = float(input("Введите начальное приближение для y: ").replace(',', '.'))
                 break
             except ValueError:
-                print("Пожалуйста, введите числовые значения.")
+                print("Числаааааа, числааааааа хочу!")
 
         while True:
             try:
-                eps = float(input("Введите точность вычисления: "))
+                eps = float(input("Введите точность вычисления: ").replace(',', '.'))
                 if eps <= 0:
                     print("Точность должна быть положительным числом!")
                     continue
+                elif eps > 1:
+                    print("А можно точность поменьше плись(")
+                    continue
                 break
             except ValueError:
-                print("Пожалуйста, введите положительное число.")
+                print("Дайте мне адекватную точность. А то работать не буду")
 
         return sys_num, x0, y0, eps
 
     def read_system_from_file(self):
+        print("\nДоступные системы уравнений:")
+        for num, sys in self.systems.items():
+            print(f"{num}. \n{sys['desc']}\n")
         while True:
             try:
                 filename = input("Введите имя файла: ")
@@ -172,26 +186,28 @@ class NonlinearEquationSolver:
                     lines = [line.strip() for line in f.readlines() if line.strip()]
 
                 if len(lines) < 4:
-                    raise ValueError("Файл должен содержать минимум 4 строки")
+                    raise ValueError("Строк не хватает. Надо минимум 4. Дай мне строк!")
 
                 sys_num = int(lines[0])
                 if sys_num not in self.systems:
-                    raise ValueError("Некорректный номер системы")
+                    raise ValueError("Такой системы у нас нет, зайдите позже или поменяйте данные")
 
-                x0 = float(lines[1])
-                y0 = float(lines[2])
-                eps = float(lines[3])
+                x0 = float(lines[1].replace(',', '.'))
+                y0 = float(lines[2].replace(',', '.'))
+                eps = float(lines[3].replace(',', '.'))
                 if eps <= 0:
-                    raise ValueError("Точность должна быть положительной")
+                    raise ValueError("слишком малаааааа! Точность бы побольше чутка, мы такое не потянем")
+                elif eps > 1:
+                    raise ValueError("А можно точность поменьше плись(")
 
                 return sys_num, x0, y0, eps
 
             except FileNotFoundError:
-                print("Файл не найден. Попробуйте еще раз.")
+                print("Такого файла у нас нет. Возвращайтесь позже")
             except ValueError as e:
-                print(f"Ошибка в данных файла: {e}. Попробуйте еще раз.")
+                print(f"Ошибка в данных файла: {e}. Давай по новой!")
             except Exception as e:
-                print(f"Неизвестная ошибка: {e}. Попробуйте еще раз.")
+                print(f"Все фигня: {e}. Давай по новой!")
 
     def verify_interval(self, func, a, b):
         try:
@@ -218,7 +234,7 @@ class NonlinearEquationSolver:
             if sign_changes == 0:
                 return False, "Функция не меняет знак на интервале (корней нет)"
             elif sign_changes > 1:
-                return False, f"Функция меняет знак {sign_changes} раз (несколько корней)"
+                return False, f"Функция меняет знак {sign_changes} раз(a) - у несколько корней. Хьюстон, для меня слишком сложно"
 
         return True, "Интервал корректен"
 
@@ -400,7 +416,7 @@ class NonlinearEquationSolver:
             choice = input("Ваш выбор (1/2): ")
             if choice in ['1', '2']:
                 return choice
-            print("Некорректный ввод. Пожалуйста, введите 1 или 2.")
+            print("Да ну пора уже научиться выбирать из двух вариантов")
 
     def output_to_screen(self, result, eq_desc):
         root, f_root, iterations = result
@@ -449,7 +465,7 @@ class NonlinearEquationSolver:
             elif mode == '3':
                 break
             else:
-                print("Некорректный ввод. Пожалуйста, введите 1, 2 или 3.")
+                print("Учимся выбирать из предложенных вариантов")
 
     def solve_equation(self):
         input_choice = self.choose_input_method()
@@ -477,7 +493,7 @@ class NonlinearEquationSolver:
             method_choice = input("Ваш выбор (1/2/3): ")
             if method_choice in ['1', '2', '3']:
                 break
-            print("Некорректный ввод. Пожалуйста, введите 1, 2 или 3.")
+            print("Выбираем из предложенных вариантов, не тупим")
 
         if method_choice == '1':
             result = self.chord_method(func, a, b, eps)
